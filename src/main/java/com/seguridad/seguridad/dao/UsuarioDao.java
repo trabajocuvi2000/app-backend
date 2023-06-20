@@ -18,6 +18,8 @@ public interface UsuarioDao {
     Usuarios obtenerUsuarioPorCredenciales(Usuarios usuario);
     List<Usuarios> obtenerUsuariosComunidad(int idComunidadUsuarioPertenence);
     UsuarioComunidadAdd actualizarComunidadUsuario(int usuarioId, String codigoComunidad); 
-    Usuarios recuperarContrasena(Usuarios usuario);
+    Usuarios recuperarContrasena(Usuarios usuario);    
+    Usuarios actualizarContrasena(Usuarios usuario, String contrasenaNueva);
+
     
 }

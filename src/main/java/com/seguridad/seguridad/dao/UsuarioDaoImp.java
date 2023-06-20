@@ -22,7 +22,7 @@ public class UsuarioDaoImp implements UsuarioDao {
     @Override
     public Usuarios obtenerUsuarioPorCredenciales(Usuarios usuario) {
 
-        System.out.println(usuario.getCorreo_1());
+//        System.out.println(usuario.getCorreo_1());
         boolean valor = false;
         String query = "select u from Usuarios as u where u.correo_1 = :correo";
         List<Usuarios> lista = entityManager.createQuery(query).setParameter("correo", usuario.getCorreo_1()).getResultList();
@@ -61,7 +61,7 @@ public class UsuarioDaoImp implements UsuarioDao {
 //        select comunidad_id FROM comunidad WHERE codigo = "";
         String query1 = "select c from Comunidad as c where c.codigo = :codigoComunidad";
         List<Comunidad> listaComunidad = entityManager.createQuery(query1).setParameter("codigoComunidad", codigoComunidad).getResultList();
-        
+
         System.out.println(listaComunidad);
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
@@ -85,15 +85,15 @@ public class UsuarioDaoImp implements UsuarioDao {
         if (lista.isEmpty()) {
             return null;
         }
-        
+
         // actualizamos la contrasena del usuario
         int idUsuario = lista.get(0).getUsuario_id();
         String contrasena = "1234";
-     
+
         //        ENCRIPTAMOS LA CONTRASENA
         Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
         String hash = argon2.hash(1, 1024, 1, contrasena);
-       
+
         Query querySt = null;
         String queryUpdate = "update Usuarios u set u.contrasena = :contrasena where u.usuario_id = :idUsuario";
         querySt = entityManager.createQuery(queryUpdate).setParameter("contrasena", hash).setParameter("idUsuario", idUsuario);
@@ -103,6 +103,46 @@ public class UsuarioDaoImp implements UsuarioDao {
         // insertamos la contrqasen en el objeto para que debuelva
         lista.get(0).setContrasena(hash);
         return lista.get(0);
+    }
+
+    @Override
+    public Usuarios actualizarContrasena(Usuarios usuario, String contrasenaNueva) {
+
+        boolean valor = false;
+        String query = "select u from Usuarios as u where u.correo_1 = :correo";
+        List<Usuarios> lista = entityManager.createQuery(query).setParameter("correo", usuario.getCorreo_1()).getResultList();
+//        SI LA LISTA ESTA VACIA NO SE ENCONTRO UN USUARIO CON EL CORREO
+        if (lista.isEmpty()) {
+            return null;
+        }
+
+        String passwordHashed = lista.get(0).getContrasena();
+//        VERIFICAMOS SI LA CONTORASENA ES LA CORRECTA
+        Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
+        if (argon2.verify(passwordHashed, usuario.getContrasena())) {
+//            return lista.get(0); // DEVOLVEMOS EL USUARIO en caso de que el usuario y la contrasena sena las correctas
+        } else {
+            return null;
+        }
+        // actualizamos la contrasena del usuario
+        int idUsuario = usuario.getUsuario_id();
+        
+//        System.out.println("Contrasena nueva "+contrasenaNueva);
+//        String contrasenaNueva = "1234";
+        //        ENCRIPTAMOS LA CONTRASENA
+        Argon2 argon3 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
+        String hash = argon3.hash(1, 1024, 1, contrasenaNueva);
+
+        Query querySt = null;
+        String queryUpdate = "update Usuarios u set u.contrasena = :contrasena where u.usuario_id = :idUsuario";
+        querySt = entityManager.createQuery(queryUpdate).setParameter("contrasena", hash).setParameter("idUsuario", idUsuario);
+        int isRun = querySt.executeUpdate();
+        // enviamos unmmens
+//        System.out.println(isRun);
+        // insertamos la contrqasen en el objeto para que debuelva
+        usuario.setContrasena(hash);
+        
+        return usuario;
     }
 
 }

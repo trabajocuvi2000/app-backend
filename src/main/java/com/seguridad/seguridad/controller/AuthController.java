@@ -54,5 +54,10 @@ public class AuthController {
     public Usuarios recuperarContrasena(@RequestBody Usuarios usuario) {
         return usuarioDao.recuperarContrasena(usuario);
     }
+    
+    @RequestMapping(value = "/actualizarContrasena/{nuevaContrasena}", method = RequestMethod.POST)
+    public Usuarios actualizarContrasena(@RequestBody Usuarios usuario, @PathVariable("nuevaContrasena") String nuevaContrasena) {
+        return usuarioDao.actualizarContrasena(usuario, nuevaContrasena);
+    }
 
 }
